@@ -2,7 +2,7 @@ import axios from "axios";
 // import { object, number, string, InferOutput, parse } from "valibot";
 import { SearchType } from "../types";
 import { z } from "zod";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 // const isWeatherResponse = (weather: unknown) : weather is Weather => {
 //   return (
@@ -88,8 +88,12 @@ export default function useWeather() {
       console.log(error);
     }
   };
+
+  const hasWeatherData = useMemo (() => weather.name, [weather])
+  console.log(hasWeatherData)
   return {
     weather,
-    fetchWeather
+    fetchWeather,
+    hasWeatherData
   };
 }
