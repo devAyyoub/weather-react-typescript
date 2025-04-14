@@ -52,6 +52,8 @@ export default function useWeather() {
 
   const [loading, setLoading] = useState(false);
 
+  const [notFound, setNotFound] = useState(false)
+
   const fetchWeather = async (search: SearchType) => {
     setLoading(true);
     setWeather(initialState);
@@ -60,10 +62,15 @@ export default function useWeather() {
       const geoUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${search.city},${search.country}&appid=${apiKey}`;
 
       const { data } = await axios.get(geoUrl);
+
+      // Comprobar si existe
+      if (!data[0]) {
+        setNotFound(true);
+        return;
+      }
+
       const lat = data[0].lat;
       const lon = data[0].lon;
-      console.log(lat);
-      console.log(lon);
 
       const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`;
 
@@ -98,11 +105,11 @@ export default function useWeather() {
   };
 
   const hasWeatherData = useMemo(() => weather.name, [weather]);
-  console.log(hasWeatherData);
   return {
     weather,
     loading,
+    notFound,
     fetchWeather,
-    hasWeatherData,
+    hasWeatherData
   };
 }
