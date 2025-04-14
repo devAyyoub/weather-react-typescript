@@ -40,15 +40,21 @@ export type Weather = z.infer<typeof Weather>;
 // type Weather = InferOutput<typeof WeatherSchema>;
 
 export default function useWeather() {
-  const [weather, setWeather] = useState<Weather>({
+  const initialState = {
     name: "",
     main: {
       temp: 0,
       temp_max: 0,
       temp_min: 0,
     },
-  });
+  };
+  const [weather, setWeather] = useState<Weather>(initialState);
+
+  const [loading, setLoading] = useState(false);
+
   const fetchWeather = async (search: SearchType) => {
+    setLoading(true);
+    setWeather(initialState);
     try {
       const apiKey = import.meta.env.VITE_API_KEY;
       const geoUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${search.city},${search.country}&appid=${apiKey}`;
@@ -86,14 +92,17 @@ export default function useWeather() {
       //   }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const hasWeatherData = useMemo (() => weather.name, [weather])
-  console.log(hasWeatherData)
+  const hasWeatherData = useMemo(() => weather.name, [weather]);
+  console.log(hasWeatherData);
   return {
     weather,
+    loading,
     fetchWeather,
-    hasWeatherData
+    hasWeatherData,
   };
 }
